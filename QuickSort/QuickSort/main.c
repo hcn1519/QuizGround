@@ -25,8 +25,13 @@ int64_t partition(int64_t arr[], int64_t pivotIndex, int64_t startIndex, int64_t
     int64_t i = startIndex + 1;
     int64_t j = startIndex + 1;
 
+    // Swap Pivot and First Element
+    swap(arr, startIndex, pivotIndex);
+
+    int64_t currentPivotIndex = startIndex;
+
     for(; j <= endIndex; j++) {
-        if (arr[j] < arr[pivotIndex]) {
+        if (arr[j] < arr[currentPivotIndex]) {
             swap(arr, i, j);
             i++;
         }
@@ -35,17 +40,60 @@ int64_t partition(int64_t arr[], int64_t pivotIndex, int64_t startIndex, int64_t
     return i - 1;
 }
 
-int64_t selectPivot(int64_t arr[], int64_t startIndex, int64_t endIndex) {
+int64_t selectStartPivot(int64_t arr[], int64_t startIndex, int64_t endIndex) {
     return startIndex;
 }
 
+int64_t selectEndPivot(int64_t arr[], int64_t startIndex, int64_t endIndex) {
+    return endIndex;
+}
+
+int64_t selectMedianPivot(int64_t arr[], int64_t startIndex, int64_t endIndex) {
+
+    int64_t middleIndex = (startIndex + endIndex) / 2;
+    int64_t e1 = arr[startIndex];
+    int64_t e2 = arr[middleIndex];
+    int64_t e3 = arr[endIndex];
+
+    int64_t medianIndex = startIndex;
+
+    if (e1 > e2) {
+        if (e1 > e3) {
+            if (e2 > e3) {
+                medianIndex = middleIndex;
+            } else {
+                medianIndex = endIndex;
+            }
+        } else {
+            medianIndex = startIndex;
+        }
+    } else {
+        if (e1 > e3) {
+            medianIndex = startIndex;
+        } else {
+            if (e2 > e3) {
+                medianIndex = endIndex;
+            } else {
+                medianIndex = middleIndex;
+            }
+        }
+    }
+    return medianIndex;
+}
+
+static int64_t numberOfComparison = 0;
+
 void quickSort(int64_t arr[], int64_t startIndex, int64_t endIndex) {
 
-    if (endIndex - startIndex < 1) {
+    int64_t arrLength = endIndex - startIndex + 1;
+
+    if (arrLength < 2) {
         return;
     }
 
-    int64_t pivotIndex = selectPivot(arr, startIndex, endIndex);
+    numberOfComparison += (endIndex - startIndex);
+
+    int64_t pivotIndex = selectMedianPivot(arr, startIndex, endIndex);
     int64_t updatedPivotIndex = partition(arr, pivotIndex, startIndex, endIndex);
 
     int64_t leftHalfStartIndex = startIndex;
@@ -66,6 +114,8 @@ void testQuickSort(int64_t arr[], int64_t size) {
 
     printf("Sorted array is \n");
     printArray(arr, size);
+    printf("Number Of Comparison %lld\n", numberOfComparison);
+    numberOfComparison = 0;
 }
 
 int main(int argc, const char * argv[]) {
@@ -110,3 +160,10 @@ int main(int argc, const char * argv[]) {
 
     return 0;
 }
+
+/*
+ First element as a Pivot: 162085
+ Last element as a Pivot: 164123
+ Median element as a Pivot: 138382
+ */
+
